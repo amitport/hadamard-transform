@@ -14,7 +14,7 @@ Install this library using `pip`:
 
 ## Usage
 
-Usage instructions go here.
+See `tests/test_hadamard_transform.py`.
 
 ## Development
 
