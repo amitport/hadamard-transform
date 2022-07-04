@@ -4,7 +4,7 @@
 [![Changelog](https://img.shields.io/github/v/release/amitport/hadamard-transform?include_prereleases&label=changelog)](https://github.com/amitport/hadamard-transform/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/amitport/hadamard-transform/blob/main/LICENSE)
 
-An efficient Hadamard transform implementation in PyTorch.
+A Fast Walsh–Hadamard Transform (FWHT) implementation in PyTorch.
 
 ## Installation
 
@@ -14,7 +14,43 @@ Install this library using `pip`:
 
 ## Usage
 
-See `tests/test_hadamard_transform.py`.
+For the Basic normalized fast Walsh–Hadamard transform. use:
+
+```python
+import torch
+from hadamard_transform import hadamard_transform
+
+x = torch.rand(2 ** 10, dtype=torch.float64)
+y = hadamard_transform(x)
+assert torch.allclose(
+    hadamard_transform(y),
+    x
+)
+```
+
+Since the transform is not very numerically stable by nature it is recommended to use with `float64` when possible
+
+The input is either vector or a batch of vectors where the first dimension is the batch dimension. _Each vector's length
+is expected to be a power of 2!_.
+
+If needed, this package also includes a `pad_to_power_of_2` util, which appends zeros up to the next power of 2.
+
+In some common cases we use the randomized Hadamrd transform, which randomly flips the axes:
+
+```python
+from hadamard_transform import randomized_hadamard_transform inverse_randomized_hadamard_transform
+prng = torch.Generator(device='cpu')
+x = torch.rand(2 ** 10, dtype=torch.float64)
+seed = prng.seed()
+y = randomized_hadamard_transform(x, prng),
+assert torch.allclose(
+    inverse_randomized_hadamard_transform(y, prng.manual_seed(seed)),
+    x)
+```
+
+This package also includes `hadamard_transform_`, `randomized_hadamard_transform_`, and `inverse_randomized_hadamard_transform_`. These are in-place implementations of the previous methods. They can be useful when reaching memory limits.
+
+#### See additional usage examples in `tests/test_hadamard_transform.py`.
 
 ## Development
 

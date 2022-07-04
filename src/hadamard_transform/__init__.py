@@ -10,55 +10,56 @@ def rademacher_like(x: torch.Tensor, prng: torch.Generator):
     return torch.empty_like(x).bernoulli_(generator=prng) * 2 - 1
 
 
-def hadamard_transform(vec: torch.Tensor, batched: bool = False):
+def hadamard_transform(x: torch.Tensor):
     """Fast Walsh–Hadamard transform
 
     The hadamard transform is not very numerically stable by nature (lots of subtractions),
     it is recommended to use with float64 when possible
 
-    :param vec: vec length is expected to be a power of 2! (or each row if it is batched)
-    :param batched: indicate whether to treat the first parameter as batch dimension
-    :return: the Hadamard transform of vec
+    :param x: Either a vector or a batch of vectors where the first dimension is the batch dimension.
+              Each vector's length is expected to be a power of 2! (or each row if it is batched)
+    :return: The normalized Hadamard transform of each vector in x
     """
-    original_shape = vec.shape
-    if not batched:
+    original_shape = x.shape
+    assert 1 <= len(original_shape) <= 2, 'input\'s dimension must be either 1 or 2'
+    if len(original_shape) is 1:
         # add fake 1 batch dimension
         # for making the code a follow a single (batched) path
-        vec = vec.unsqueeze(0)
-    batch_dim, vec_dim = vec.shape
+        x = x.unsqueeze(0)
+    batch_dim, d = x.shape
 
     h = 2
-    while h <= vec_dim:
+    while h <= d:
         hf = h // 2
-        vec = vec.view(batch_dim, vec_dim // h, h)
+        x = x.view(batch_dim, d // h, h)
 
-        half_1, half_2 = vec[:, :, :hf], vec[:, :, hf:]
+        half_1, half_2 = x[:, :, :hf], x[:, :, hf:]
 
-        vec = torch.cat((half_1 + half_2, half_1 - half_2), dim=-1)
+        x = torch.cat((half_1 + half_2, half_1 - half_2), dim=-1)
 
         h *= 2
 
-    return (vec / sqrt(vec_dim)).view(*original_shape)
+    return (x / sqrt(d)).view(*original_shape)
 
 
 def randomized_hadamard_transform(x: torch.Tensor, prng: torch.Generator,
-                                  batched: Union[bool, Literal['same_rotation']] = False):
-    if batched == 'same_rotation':
+                                  same_rotation_batch: bool = False):
+    if same_rotation_batch:
         d = rademacher_like(x[0], prng)
     else:
         d = rademacher_like(x, prng)
 
-    return hadamard_transform(x * d, batched)
+    return hadamard_transform(x * d)
 
 
 def inverse_randomized_hadamard_transform(tx: torch.Tensor, prng: torch.Generator,
-                                          batched: Union[bool, Literal['same_rotation']] = False):
-    if batched == 'same_rotation':
+                                          same_rotation_batch: bool = False):
+    if same_rotation_batch:
         d = rademacher_like(tx[0], prng)
     else:
         d = rademacher_like(tx, prng)
 
-    return hadamard_transform(tx, batched) * d
+    return hadamard_transform(tx) * d
 
 
 def hadamard_transform_(vec: torch.Tensor):
@@ -92,16 +93,16 @@ def hadamard_transform_(vec: torch.Tensor):
     vec /= sqrt(d)
 
 
-def randomized_hadamard_transform_(x: torch.Tensor, prng: torch.Generator):
-    d = rademacher_like(x, prng)
-    x *= d
-    hadamard_transform_(x)
+def randomized_hadamard_transform_(vec: torch.Tensor, prng: torch.Generator):
+    d = rademacher_like(vec, prng)
+    vec *= d
+    hadamard_transform_(vec)
 
 
-def inverse_randomized_hadamard_transform_(tx: torch.Tensor, prng: torch.Generator):
-    d = rademacher_like(tx, prng)
-    hadamard_transform_(tx)
-    tx *= d
+def inverse_randomized_hadamard_transform_(tvec: torch.Tensor, prng: torch.Generator):
+    d = rademacher_like(tvec, prng)
+    hadamard_transform_(tvec)
+    tvec *= d
 
 
 def next_power_of_2(n):

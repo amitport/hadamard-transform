@@ -12,8 +12,8 @@ def test_hadamard_transform():
 
 def test_batched_hadamard_transform():
     x = torch.rand([10, 2 ** 10], dtype=torch.float64)
-    y = hadamard_transform(x, batched=True)
-    assert torch.allclose(hadamard_transform(y, batched=True), x)
+    y = hadamard_transform(x)
+    assert torch.allclose(hadamard_transform(y), x)
 
 
 def test_randomized_hadamard_transform():
@@ -31,7 +31,7 @@ def test_batched_randomized_hadamard_transform():
     prng = torch.Generator(device='cpu')
     x = torch.rand([1, 2 ** 10], dtype=torch.float64).repeat(10, 1)
     seed = prng.seed()
-    tx = randomized_hadamard_transform(x, prng, batched=True)
+    tx = randomized_hadamard_transform(x, prng)
     # no row should be close to the other (unless some very rare random event)
     assert not torch.any(torch.all(torch.isclose(tx[1:], tx[0]), dim=1))
     # after the rotation all vector return to the original value
@@ -39,7 +39,6 @@ def test_batched_randomized_hadamard_transform():
         inverse_randomized_hadamard_transform(
             tx,
             prng.manual_seed(seed),
-            batched=True,
         ), x)
 
 
@@ -47,13 +46,13 @@ def test_batched_same_randomized_hadamard_transform():
     prng = torch.Generator(device='cpu')
     x = torch.rand([1, 2 ** 10], dtype=torch.float64).repeat(10, 1)
     seed = prng.seed()
-    tx = randomized_hadamard_transform(x, prng, batched='same_rotation')
+    tx = randomized_hadamard_transform(x, prng, same_rotation_batch=True)
     assert torch.allclose(tx[1:], tx[0])
     assert torch.allclose(
         inverse_randomized_hadamard_transform(
             tx,
             prng.manual_seed(seed),
-            batched='same_rotation',
+            same_rotation_batch=True,
         ), x)
 
 
