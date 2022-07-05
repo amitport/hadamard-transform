@@ -13,7 +13,7 @@ def rademacher_like(x: torch.Tensor, prng: torch.Generator):
 def hadamard_transform(x: torch.Tensor):
     """Fast Walsh–Hadamard transform
 
-    The hadamard transform is not very numerically stable by nature (lots of subtractions),
+    The hadamard transform is not numerically stable by nature (lots of subtractions),
     it is recommended to use with float64 when possible
 
     :param x: Either a vector or a batch of vectors where the first dimension is the batch dimension.

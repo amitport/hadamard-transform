@@ -14,7 +14,7 @@ Install this library using `pip`:
 
 ## Usage
 
-For the Basic normalized fast Walsh–Hadamard transform. use:
+For the Basic normalized fast Walsh–Hadamard transform, use:
 
 ```python
 import torch
@@ -28,17 +28,19 @@ assert torch.allclose(
 )
 ```
 
-Since the transform is not very numerically stable by nature it is recommended to use with `float64` when possible
+Since the transform is not numerically-stable, it is recommended to use `float64` when possible.
 
-The input is either vector or a batch of vectors where the first dimension is the batch dimension. _Each vector's length
-is expected to be a power of 2!_.
+The input is either a vector or a batch of vectors where the first dimension is the batch dimension. _Each vector's length
+is expected to be a power of 2!_
 
-If needed, this package also includes a `pad_to_power_of_2` util, which appends zeros up to the next power of 2.
+This package also includes a `pad_to_power_of_2` util, which appends zeros up to the next power of 2 if needed.
 
-In some common cases we use the randomized Hadamrd transform, which randomly flips the axes:
+In some common cases, we use the randomized Hadamard transform, which randomly flips the axes:
 
 ```python
-from hadamard_transform import randomized_hadamard_transform inverse_randomized_hadamard_transform
+import torch
+from hadamard_transform import randomized_hadamard_transform, inverse_randomized_hadamard_transform
+
 prng = torch.Generator(device='cpu')
 x = torch.rand(2 ** 10, dtype=torch.float64)
 seed = prng.seed()
@@ -48,7 +50,7 @@ assert torch.allclose(
     x)
 ```
 
-This package also includes `hadamard_transform_`, `randomized_hadamard_transform_`, and `inverse_randomized_hadamard_transform_`. These are in-place implementations of the previous methods. They can be useful when reaching memory limits.
+This package also includes `hadamard_transform_`, `randomized_hadamard_transform_`, and `inverse_randomized_hadamard_transform_`. These are in-place implementations of the previous methods. They can be useful when approaching memory limits.
 
 #### See additional usage examples in `tests/test_hadamard_transform.py`.
 
