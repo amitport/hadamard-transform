@@ -1,4 +1,4 @@
-# Hadamard Transform
+# hadamard-transform
 
 [![PyPI](https://img.shields.io/pypi/v/hadamard-transform.svg)](https://pypi.org/project/hadamard-transform/)
 [![Changelog](https://img.shields.io/github/v/release/amitport/hadamard-transform?include_prereleases&label=changelog)](https://github.com/amitport/hadamard-transform/releases)
@@ -64,7 +64,7 @@ To contribute to this library, first checkout the code. Then create a new virtua
 
 Now install the dependencies and test dependencies:
 
-    pip install -e '.[test]'
+    pip install -e ".[test]"
 
 To run the tests:
 
