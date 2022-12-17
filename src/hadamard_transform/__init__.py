@@ -22,7 +22,7 @@ def hadamard_transform(x: torch.Tensor):
     """
     original_shape = x.shape
     assert 1 <= len(original_shape) <= 2, 'input\'s dimension must be either 1 or 2'
-    if len(original_shape) is 1:
+    if len(original_shape) == 1:
         # add fake 1 batch dimension
         # for making the code a follow a single (batched) path
         x = x.unsqueeze(0)
