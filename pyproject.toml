@@ -1,3 +1,41 @@
 [build-system]
-requires = ["setuptools>=42"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "hadamard-transform"
+version = "0.2.0"
+description = "Fast Walsh–Hadamard Transform (FWHT) in PyTorch"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    { name = "Amit Portnoy", email = "amit.portnoy@gmail.com" },
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "torch>=2.0",
+]
+
+[project.optional-dependencies]
+test = ["pytest"]
+
+[project.urls]
+Homepage = "https://github.com/amitport/hadamard-transform"
+"Bug Tracker" = "https://github.com/amitport/hadamard-transform/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/hadamard_transform"]
+
+[tool.pytest.ini_options]
+markers = [
+    "gpu: test requires a CUDA device (skipped if CUDA is unavailable; pass --require-gpu to fail instead)",
+]
